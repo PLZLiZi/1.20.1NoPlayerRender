@@ -8,12 +8,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -78,7 +77,7 @@ public class NPRFixMod {
 		public static void onLivingEntityRender(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
 			if (NPRFixConfig.npr_enable && Minecraft.getInstance().level != null && Minecraft.getInstance().player != null) {
 				Entity entity = event.getEntity();
-				if (entity instanceof Player player) {
+				if (entity instanceof Player) {
 					if (event.isCancelable()) {
 						event.setCanceled(true);
 					}
@@ -88,7 +87,7 @@ public class NPRFixMod {
 		}
 
 		@SubscribeEvent(priority = EventPriority.LOWEST)
-		public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+		public static void onEntityJoinLevel(PlayerLoggedInEvent event) {
 			if (NPRFixConfig.npr_enable && event.getEntity() instanceof LocalPlayer player) {
 				player.sendSystemMessage(Component.translatable("nprfix.enable.warnmessage"));
 			}
