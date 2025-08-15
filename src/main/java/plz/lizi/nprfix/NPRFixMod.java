@@ -3,13 +3,17 @@ package plz.lizi.nprfix;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -26,7 +30,7 @@ import org.slf4j.Logger;
 @Mod(NPRFixMod.MODID)
 public class NPRFixMod {
 	// Define mod id in a common place for everything to reference
-	public static final String MODID = "no_player_render";
+	public static final String MODID = "nprfix";
 	// Directly reference a slf4j logger
 	private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -44,7 +48,7 @@ public class NPRFixMod {
 
 	private void commonSetup(final FMLCommonSetupEvent event) {
 		// Some common setup code
-		if (NPRFixConfig.noPlayerRender) {
+		if (NPRFixConfig.npr_enable) {
 		}
 	}
 
@@ -58,16 +62,21 @@ public class NPRFixMod {
 	// You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 	@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 	public static class ClientModEvents {
+
 		@SubscribeEvent
-		public static void onClientSetup(FMLClientSetupEvent event) {}
+		public static void onClientSetup(FMLClientSetupEvent event) {
+			if (NPRFixConfig.npr_enable) {
+				LOGGER.info(Component.translatable("nprfix.enable.warnmessage").getString());
+			}
+		}
 	}
 
 	@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-	public static class ClientForgeEvents {
+	public static class ModEvents {
 
 		@SubscribeEvent(priority = EventPriority.LOWEST)
 		public static void onLivingEntityRender(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
-			if (NPRFixConfig.noPlayerRender) {
+			if (NPRFixConfig.npr_enable && Minecraft.getInstance().level != null && Minecraft.getInstance().player != null) {
 				Entity entity = event.getEntity();
 				if (entity instanceof Player player) {
 					if (event.isCancelable()) {
@@ -75,6 +84,13 @@ public class NPRFixMod {
 					}
 					event.setResult(Result.DENY);
 				}
+			}
+		}
+
+		@SubscribeEvent(priority = EventPriority.LOWEST)
+		public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+			if (NPRFixConfig.npr_enable && event.getEntity() instanceof LocalPlayer player) {
+				player.sendSystemMessage(Component.translatable("nprfix.enable.warnmessage"));
 			}
 		}
 	}
