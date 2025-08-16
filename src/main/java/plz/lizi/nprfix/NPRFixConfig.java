@@ -10,7 +10,7 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 @Mod.EventBusSubscriber(modid = NPRFixMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class NPRFixConfig {
 	private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-	private static final ForgeConfigSpec.BooleanValue NPR_SETTING_ENABLE = BUILDER.comment(" If a player experiences abnormal lag while their body is visible on the backpack interface, while sleeping, etc., please enable the option\n 如果玩家在背包界面、睡觉等一切看得到玩家身体的情况下遇到异常卡顿，则请启用选项").define("enable_npr_fix", false);
+	private static final ForgeConfigSpec.BooleanValue NPR_SETTING_ENABLE = BUILDER.comment(" If a player experiences abnormal lag while their body is visible on the backpack interface, while sleeping, etc., please enable the option\n 如果玩家在背包界面、睡觉等一切看得到玩家身体的情况下遇到异常卡顿，则请启用选项\n true : 启用NPR Fix, 玩家模型将不会被渲染以减少卡顿\n false : 不启用NPR Fix, 正常渲染玩家模型 (默认)").define("enable_npr_fix", false);
 	static final ForgeConfigSpec SPEC = BUILDER.build();
 	public static boolean npr_enable;
 
